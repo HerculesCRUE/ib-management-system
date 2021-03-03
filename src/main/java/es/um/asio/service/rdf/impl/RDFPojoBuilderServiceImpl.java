@@ -17,7 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import es.um.asio.abstractions.constants.Constants;
 import es.um.asio.abstractions.domain.ManagementBusEvent;
+import es.um.asio.abstractions.domain.Operation;
 import es.um.asio.abstractions.perfomance.WatchDog;
 import es.um.asio.domain.PojoData;
 import es.um.asio.service.model.GeneralBusEvent;
@@ -52,6 +54,8 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 	/** The RDF pojo linking builder service. */
 	@Autowired
 	private RDFPojoLinkBuilderService rDFPojoLinkingBuilderService;
+	
+	private Boolean changeOperation;
 
 	/**
 	 * Creates the.
@@ -62,8 +66,14 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 	@Override
 	public ManagementBusEvent inkoveBuilder(final GeneralBusEvent<?> input) {
 		ManagementBusEvent result = null;
+		this.changeOperation = false;
+		
 		if (input.getData() instanceof PojoData) {
 			final ModelWrapper model = this.createRDF(input.retrieveInnerObj());
+			
+			if (Operation.INSERT.equals(((PojoData) input.getData()).getOperation()) && this.changeOperation) {
+				((PojoData) input.getData()).setOperation(Operation.UPDATE);
+			}
 			
 			result = new ManagementBusEvent(model.getModelId(), RDFUtil.toString(model.getModel()),
 					StringUtils.EMPTY, this.getClass(input.retrieveInnerObj()), input.retrieveOperation());
@@ -105,6 +115,10 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 		urisWatchDog.takeTime("rootUri");
 
 		try {
+			final LinkedHashMap<String,Object> inputPojo = ((LinkedHashMap<String,Object>) obj);
+			
+			final String lang = inputPojo.get(Constants.LANG) != null ? inputPojo.get(Constants.LANG).toString() : Constants.SPANISH_LANGUAGE;
+			
 			// 1. create the resource
 			final String className = (String) PropertyUtils.getProperty(obj, RDFPojoBuilderServiceImpl.ETL_POJO_CLASS);
 			final String objectId = this.safetyCheck(PropertyUtils.getProperty(obj, RDFPojoBuilderServiceImpl.ETL_POJO_ID));
@@ -114,36 +128,39 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 			}
 			
 			urisWatchDog.reset();
-			final String modelId = urisGeneratorClient.createResourceID(obj);
+			final Map<String, String> resourceMap = urisGeneratorClient.mapResourceID(obj, lang);
+			
+			final String modelId = resourceMap != null ? (String) resourceMap.get(Constants.CANONICAL_LANGUAGE_URI): null;
 			urisWatchDog.takeTime("createResourceID");
+			
+			if (resourceMap != null && resourceMap.containsKey("similarity")) {
+				this.changeOperation = true;
+			}
 			
 			final Resource resourceProperties = model.createResource(modelId);
 			
-			// 2. create the properties
-			String pojoNodeID;
-						
-			final LinkedHashMap<String,Object> inputPojo = ((LinkedHashMap<String,Object>) obj);
-						
+			// 2. create the properties						
 			String key = null;
 			String value = null;
 			for(Map.Entry<String, Object> entry: inputPojo.entrySet()) {
 				key = entry.getKey();
 				
 				// we skip the clase field
-				if (!RDFPojoBuilderServiceImpl.ETL_POJO_CLASS.equalsIgnoreCase(key)) {
+				if (!RDFPojoBuilderServiceImpl.ETL_POJO_CLASS.equalsIgnoreCase(key) &&
+						!Constants.LANG.equalsIgnoreCase(key)) {
 					urisWatchDog.reset();
-					final Property property = model.createProperty(urisGeneratorClient.createPropertyURI(obj, key), key);
+					final Property property = model.createProperty(urisGeneratorClient.createPropertyURI(obj, key, lang), key);
 					urisWatchDog.takeTime("createPropertyURI");
 					
 					// simple property						
 					value = entry.getValue() == null ? StringUtils.EMPTY : StringUtils.defaultString(entry.getValue().toString());
-					resourceProperties.addProperty(property, value, RDFPojoBuilderServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
+					resourceProperties.addProperty(property, value, StringUtils.isNotBlank(lang) ? lang.split("-")[0] : RDFPojoBuilderServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
 				}
 			}
 			
 			// 3. we set the type
 			urisWatchDog.reset();
-			final Resource resourceClass = model.createResource(urisGeneratorClient.createResourceTypeURI(className));
+			final Resource resourceClass = model.createResource(urisGeneratorClient.createResourceTypeURI(className, lang));
 			urisWatchDog.takeTime("createResourceTypeURI");
 			
 			model.add(resourceProperties, RDF.type, resourceClass);

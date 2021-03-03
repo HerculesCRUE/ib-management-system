@@ -1,6 +1,6 @@
 package es.um.asio.service.uris;
 
-import es.um.asio.abstractions.storage.StorageType;
+import java.util.Map;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -16,6 +16,32 @@ public interface URISGeneratorClient {
 	 */
 	String createResourceID(Object input);
 	
+	/**
+	 * Creates the resource ID.
+	 *
+	 * @param input the input
+	 * @param lang the lang
+	 * @return the string
+	 */
+	String createResourceID(Object input, String lang);
+	
+	/**
+	 * Creates the resource ID.
+	 *
+	 * @param input the input
+	 * @return the map
+	 */
+	Map<String, String> mapResourceID(Object input);
+	
+	/**
+	 * Creates the resource ID.
+	 *
+	 * @param input the input
+	 * @param lang the lang
+	 * @return the map
+	 */
+	Map<String, String> mapResourceID(Object input, String lang);
+	
 	
 	/**
 	 * Creates the property URI.
@@ -27,12 +53,31 @@ public interface URISGeneratorClient {
 	String createPropertyURI(Object input, String property);
 	
 	/**
+	 * Creates the property URI.
+	 *
+	 * @param input the input
+	 * @param property the property
+	 * @param lang the lang
+	 * @return the string
+	 */
+	String createPropertyURI(Object input, String property, String lang);
+	
+	/**
 	 * Creates the resource type URI.
 	 *
 	 * @param className the class name
 	 * @return the string
 	 */
 	String createResourceTypeURI(String className);
+	
+	/**
+	 * Creates the resource type URI.
+	 *
+	 * @param className the class name
+	 * @param lang the lang
+	 * @return the string
+	 */
+	String createResourceTypeURI(String className, String lang);
 	
 	
 	/**
