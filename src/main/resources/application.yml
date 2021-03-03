@@ -12,6 +12,7 @@ app:
     maxAge: 3600
 
   kafka:
+    discovery-action-topic-name: discovery_action
     general-contingency-topic-name: general-contingency-data
     general-topic-name: general-data
     general-link-topic-name: general-link-data
