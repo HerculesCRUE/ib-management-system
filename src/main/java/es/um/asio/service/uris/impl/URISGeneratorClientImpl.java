@@ -33,6 +33,9 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 	@Value("${app.generator-uris.endpoint-resource-type}")
     private String resourceTypeEndpoint;
 	
+	@Value("${app.domain}")
+	private String domain;
+	
 	
 	@Autowired
 	private URISGeneratorClientCache uRISGeneratorClientCache;
@@ -57,7 +60,7 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 	@Override
 	public String createResourceID(Object obj) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(resourceIdEndpoint)
-		        .queryParam(Constants.DOMAIN, Constants.DOMAIN_VALUE)
+		        .queryParam(Constants.DOMAIN, StringUtils.isNotBlank(this.domain) ? this.domain : Constants.DOMAIN_VALUE)
 		        .queryParam(Constants.LANG, Constants.SPANISH_LANGUAGE)
 		        .queryParam(Constants.SUBDOMAIN, Constants.SUBDOMAIN_VALUE);
 		
@@ -78,7 +81,7 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 	@Override
 	public String createResourceID(Object obj, String lang) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(resourceIdEndpoint)
-		        .queryParam(Constants.DOMAIN, Constants.DOMAIN_VALUE)
+		        .queryParam(Constants.DOMAIN, StringUtils.isNotBlank(this.domain) ? this.domain : Constants.DOMAIN_VALUE)
 		        .queryParam(Constants.LANG, StringUtils.isNotBlank(lang) ? lang : Constants.SPANISH_LANGUAGE)
 		        .queryParam(Constants.SUBDOMAIN, Constants.SUBDOMAIN_VALUE);
 		
@@ -98,7 +101,7 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 	@Override
 	public Map<String, String> mapResourceID(Object obj) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(resourceIdEndpoint)
-		        .queryParam(Constants.DOMAIN, Constants.DOMAIN_VALUE)
+		        .queryParam(Constants.DOMAIN, StringUtils.isNotBlank(this.domain) ? this.domain : Constants.DOMAIN_VALUE)
 		        .queryParam(Constants.LANG, Constants.SPANISH_LANGUAGE)
 		        .queryParam(Constants.SUBDOMAIN, Constants.SUBDOMAIN_VALUE);
 		
@@ -117,7 +120,7 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 	@Override
 	public Map<String, String> mapResourceID(Object obj, String lang) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(resourceIdEndpoint)
-		        .queryParam(Constants.DOMAIN, Constants.DOMAIN_VALUE)
+		        .queryParam(Constants.DOMAIN, StringUtils.isNotBlank(this.domain) ? this.domain : Constants.DOMAIN_VALUE)
 		        .queryParam(Constants.LANG, StringUtils.isNotBlank(lang) ? lang : Constants.SPANISH_LANGUAGE)
 		        .queryParam(Constants.SUBDOMAIN, Constants.SUBDOMAIN_VALUE);
 		
@@ -143,7 +146,7 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 			input.put(Constants.PROPERTY, property);
 			
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(propertyEndpoint)
-					.queryParam(Constants.DOMAIN, Constants.DOMAIN_VALUE)
+					.queryParam(Constants.DOMAIN, StringUtils.isNotBlank(this.domain) ? this.domain : Constants.DOMAIN_VALUE)
 					.queryParam(Constants.LANG, Constants.SPANISH_LANGUAGE)
 					.queryParam(Constants.SUBDOMAIN, Constants.SUBDOMAIN_VALUE);
 			
@@ -176,7 +179,7 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 			input.put(Constants.PROPERTY, property);
 			
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(propertyEndpoint)
-					.queryParam(Constants.DOMAIN, Constants.DOMAIN_VALUE)
+					.queryParam(Constants.DOMAIN, StringUtils.isNotBlank(this.domain) ? this.domain : Constants.DOMAIN_VALUE)
 					.queryParam(Constants.LANG, StringUtils.isNotBlank(lang) ? lang : Constants.SPANISH_LANGUAGE)
 					.queryParam(Constants.SUBDOMAIN, Constants.SUBDOMAIN_VALUE);
 			
@@ -206,7 +209,7 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 			input.put(Constants.CLASS, className);
 			
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(resourceTypeEndpoint)
-					.queryParam(Constants.DOMAIN, Constants.DOMAIN_VALUE)
+					.queryParam(Constants.DOMAIN, StringUtils.isNotBlank(this.domain) ? this.domain : Constants.DOMAIN_VALUE)
 					.queryParam(Constants.LANG, Constants.SPANISH_LANGUAGE)
 					.queryParam(Constants.SUBDOMAIN, Constants.SUBDOMAIN_VALUE);
 			
@@ -237,7 +240,7 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 			input.put(Constants.CLASS, className);
 			
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(resourceTypeEndpoint)
-					.queryParam(Constants.DOMAIN, Constants.DOMAIN_VALUE)
+					.queryParam(Constants.DOMAIN, StringUtils.isNotBlank(this.domain) ? this.domain : Constants.DOMAIN_VALUE)
 					.queryParam(Constants.LANG, StringUtils.isNotBlank(lang) ? lang : Constants.SPANISH_LANGUAGE)
 					.queryParam(Constants.SUBDOMAIN, Constants.SUBDOMAIN_VALUE);
 			
