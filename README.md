@@ -9,8 +9,8 @@
 | Módulo         | Sistema de gestión                                           |
 | Tipo           | Software                                                     |
 | Objetivo       | Sistema de gestión de datos del módulo de procesamiento para el proyecto Backend SGI (ASIO). |
-| Estado         | **30%** Se importan algunos de los Pojos definitivos.        |
-| Próximos pasos | Se deben generar los objetos RDF para todos los datos recibidos siguiendo el formato de la ontología. |
+| Estado         | **100%**        |
+| Próximos pasos | |
 | Documentación  | [Manual de usuario](https://github.com/HerculesCRUE/ib-asio-docs-/blob/master/00-An%C3%A1lisis/Manual%20de%20usuario/Manual%20de%20usuario.md)<br />[Manual de despliegue](https://github.com/HerculesCRUE/ib-asio-composeset/blob/master/README.md)<br />[Documentación técnica](https://github.com/HerculesCRUE/ib-asio-docs-/blob/master/00-Arquitectura/arquitectura_semantica/documento_arquitectura/ASIO_Izertis_Arquitectura.md) |
 
 
