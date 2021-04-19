@@ -27,6 +27,7 @@ app:
     endpoint-resource-id: ${app.generator-uris.endpoint}/uri-factory/canonical/resource
     endpoint-property: ${app.generator-uris.endpoint}/uri-factory/canonical/property
     endpoint-resource-type: ${app.generator-uris.endpoint}/uri-factory/canonical/entity
+    endpoint-local: ${app.generator-uris.endpoint}/uri-factory/local
 
 # Cache configuration
   cache:

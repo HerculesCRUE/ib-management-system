@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import es.um.asio.abstractions.constants.Constants;
 import es.um.asio.abstractions.domain.ManagementBusEvent;
+import es.um.asio.abstractions.domain.Operation;
 import es.um.asio.abstractions.perfomance.WatchDog;
 import es.um.asio.domain.PojoLinkedToData;
 import es.um.asio.service.model.GeneralBusEvent;
@@ -42,16 +42,23 @@ public class RDFDiscoveryServiceImpl implements RDFDiscoveryService {
 	/** The uris generator client. */
 	@Autowired
 	private URISGeneratorClient urisGeneratorClient;
+	
+	private boolean link = false;
+	
+	private boolean lodLink = false;
 
 	@Override
 	public ManagementBusEvent inkoveBuilder(GeneralBusEvent<?> input) {
 		ManagementBusEvent result = null;
 		
 		if (input.getData() instanceof PojoLinkedToData) {
-			final ModelWrapper model = this.createRDF(input.retrieveInnerObj("linkedTo"));
+			this.link = input.retrieveOperation().equals(Operation.LINK);
+			this.lodLink = input.retrieveOperation().equals(Operation.LOD_LINK);
 			
-			result = new ManagementBusEvent(model.getModelId(), RDFUtil.toString(model.getModel()), model.getLinkedModel(), 
-					this.getClass(model.getLinkedModel()), input.retrieveOperation());
+			final ModelWrapper model = !this.link && !this.lodLink ? this.createRDF(input.retrieveInnerObj("linkedTo")) : this.createRDF(input.retrieveInnerObj("object"));
+			
+			result = new ManagementBusEvent(model.getModelId(), RDFUtil.toString(model.getModel()), model.getLinkedModel(), this.getClass(model.getLinkedModel()), 
+					this.link || this.lodLink ? Operation.UPDATE : input.retrieveOperation());
 		} else {
 			result = this.nextBuilder(input);
 		}
@@ -100,7 +107,7 @@ public class RDFDiscoveryServiceImpl implements RDFDiscoveryService {
 			for(Map.Entry<String, Object> entry: attributes.entrySet()) {
 				key = entry.getKey();
 				
-				// we skip the clase field
+				// we skip the class field
 				if (!RDFDiscoveryServiceImpl.ETL_POJO_CLASS.equalsIgnoreCase(key)) {
 					urisWatchDog.reset();
 					final Property property = model.createProperty(urisGeneratorClient.createPropertyURI(obj, key), key);
@@ -110,6 +117,14 @@ public class RDFDiscoveryServiceImpl implements RDFDiscoveryService {
 					value = entry.getValue() == null ? StringUtils.EMPTY : StringUtils.defaultString(entry.getValue().toString());
 					resourceProperties.addProperty(property, value, RDFDiscoveryServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
 				}
+			}
+			
+			if (this.link && linkedObj.containsKey("localUri") && StringUtils.isNotBlank(linkedObj.get("localUri").toString())) {
+				final Property property = model.createProperty("http://www.w3.org/2002/07/owl#sameAs", "");
+				resourceProperties.addProperty(property, linkedObj.get("localUri").toString(), RDFDiscoveryServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
+			} else if (this.lodLink && linkedObj.containsKey("localUri") && StringUtils.isNotBlank(linkedObj.get("localUri").toString())) {
+				final Property property = model.createProperty("http://www.w3.org/2004/02/skos/core#closeMatch", "");
+				resourceProperties.addProperty(property, linkedObj.get("localUri").toString(), RDFDiscoveryServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
 			}
 			
 			// 3. we set the type

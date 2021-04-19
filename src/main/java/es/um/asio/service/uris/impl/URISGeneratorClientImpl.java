@@ -33,6 +33,9 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 	@Value("${app.generator-uris.endpoint-resource-type}")
     private String resourceTypeEndpoint;
 	
+	@Value("${app.generator-uris.endpoint-local}")
+    private String localEndpoint;
+	
 	@Value("${app.domain}")
 	private String domain;
 	

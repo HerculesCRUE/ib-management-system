@@ -52,7 +52,7 @@ public class DiscoveryListener {
 		this.totalItems = 0;
 	}
 	
-	@KafkaListener(id = "discoveryKafkaListenerContainerFactory", topics = "#{'${app.kafka.discovery-action-topic-name}'.split(',')}", autoStartup = "false", 
+	@KafkaListener(id = "discoveryKafkaListenerContainerFactory", topics = "#{'${app.kafka.discovery-action-topic-name}'.split(',')}", autoStartup = "true", 
 			containerFactory = "discoveryKafkaListenerContainerFactory", properties = { "spring.json.value.default.type:es.um.asio.domain.PojoLinkedToData" })
 	public void listen(final PojoLinkedToData message) {
 		
