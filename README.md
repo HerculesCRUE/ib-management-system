@@ -4,13 +4,14 @@
 
 | Entregable     | Procesador de datos                                          |
 | -------------- | ------------------------------------------------------------ |
-| Fecha          | 12/12/2020                                                   |
+| Fecha          | 28/04/2021                                                   |
+| Revisador por  | Paloma Terán Pérez                                           |
 | Proyecto       | [ASIO](https://www.um.es/web/hercules/proyectos/asio) (Arquitectura Semántica e Infraestructura Ontológica) en el marco de la iniciativa [Hércules](https://www.um.es/web/hercules/) para la Semántica de Datos de Investigación de Universidades que forma parte de [CRUE-TIC](https://www.crue.org/proyecto/hercules/) |
 | Módulo         | Sistema de gestión                                           |
 | Tipo           | Software                                                     |
 | Objetivo       | Sistema de gestión de datos del módulo de procesamiento para el proyecto Backend SGI (ASIO). |
-| Estado         | **30%** Se importan algunos de los Pojos definitivos.        |
-| Próximos pasos | Se deben generar los objetos RDF para todos los datos recibidos siguiendo el formato de la ontología. |
+| Estado         | **100%** Se importan algunos de los Pojos definitivos.       |
+| Próximos pasos |                                                              |
 | Documentación  | [Manual de usuario](https://github.com/HerculesCRUE/ib-asio-docs-/blob/master/00-An%C3%A1lisis/Manual%20de%20usuario/Manual%20de%20usuario.md)<br />[Manual de despliegue](https://github.com/HerculesCRUE/ib-asio-composeset/blob/master/README.md)<br />[Documentación técnica](https://github.com/HerculesCRUE/ib-asio-docs-/blob/master/00-Arquitectura/arquitectura_semantica/documento_arquitectura/ASIO_Izertis_Arquitectura.md) |
 
 
@@ -93,7 +94,7 @@ No es necesario especificar la clase de inicio de la aplicación, ya que el fich
 
 Se incluyen los resultados del testing y cobertura en los siguientes enlaces:
 
-* [Testing TDD](http://herc-iz-front-desa.atica.um.es:8070/management-system/surefire/surefire-report.html)
+* [Testing TDD](https://reports.herculesasioizertis.desa.um.es/management-system/surefire/surefire-report.html)
 * [Cobertura TDD](https://sonarcloud.io/component_measures?id=HerculesCRUE_ib-management-system&metric=coverage&view=list)
 * [Testing BDD](docs/testing.md)
 
