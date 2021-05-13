@@ -98,6 +98,7 @@ public class PojoGeneralLinkListener {
 		if (isLinkRunning && (this.totalItems > 0)) {
 			this.notificationService.stopPojoGeneralListener();
 			this.notificationService.stopPojoGeneralLinkListener();
+			this.notificationService.stopDiscoveryLinkListener();
 			this.totalItems = 0;
 		}
 	}

@@ -116,5 +116,29 @@ public class NotificationServiceImpl implements NotificationService {
 
 		return (pojo || pojolink);
 	}
+	
+	/**
+	 * Start discovery listener.
+	 */
+	@Override
+	public void startDiscoveryLinkListener() {
+		final MessageListenerContainer listenerContainer = this.kafkaListenerEndpointRegistry.getListenerContainer(Constants.DISCOVERY_FACTORY);
+		
+		if (listenerContainer != null) {
+			listenerContainer.start();
+		}
+	}
+
+	/**
+	 * Stop discovery listener.
+	 */
+	@Override
+	public void stopDiscoveryLinkListener() {
+		final MessageListenerContainer listenerContainer = this.kafkaListenerEndpointRegistry.getListenerContainer(Constants.DISCOVERY_FACTORY);
+		
+		if (listenerContainer != null) {
+			listenerContainer.stop();
+		}
+	}
 
 }

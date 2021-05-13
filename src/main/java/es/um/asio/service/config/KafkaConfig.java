@@ -28,6 +28,7 @@ import es.um.asio.domain.DataSetData;
 import es.um.asio.domain.InputData;
 import es.um.asio.domain.PojoData;
 import es.um.asio.domain.PojoLinkData;
+import es.um.asio.domain.PojoLinkedToData;
 import es.um.asio.service.error.KafkaErrorHandler;
 import es.um.asio.service.util.CustomJsonSerializer;
 
@@ -118,6 +119,34 @@ public class KafkaConfig {
         factory.getContainerProperties().setIdleEventInterval(3000L);
         return factory;
     }
+    
+	////////////////////////////////////////////////////////DISCOVERY /////////////////////////////////////////////////////////////////////////////////////
+	    
+	/**
+	* Discovery consumer factory.
+	*
+	* @return the consumer factory
+	*/
+	public ConsumerFactory<String, PojoLinkedToData> discoveryConsumerFactory() {
+		// ErrorHandlingDeserializer2 avoid infinite loop when the input is wrong built
+		return new DefaultKafkaConsumerFactory<>(this.getKafkaConfiguration(), new StringDeserializer(),
+		new ErrorHandlingDeserializer2<>(new JsonDeserializer<>(PojoLinkedToData.class)));
+	}
+	
+	
+	/**
+	* Discovery kafka listener container factory.
+	*
+	* @return the concurrent kafka listener container factory
+	*/
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String, PojoLinkedToData> discoveryKafkaListenerContainerFactory() {
+		ConcurrentKafkaListenerContainerFactory<String, PojoLinkedToData> factory = new ConcurrentKafkaListenerContainerFactory<>();
+		factory.setConsumerFactory(this.discoveryConsumerFactory());
+		factory.setErrorHandler(new KafkaErrorHandler());
+		factory.getContainerProperties().setIdleEventInterval(3000L);
+		return factory;
+	}
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**

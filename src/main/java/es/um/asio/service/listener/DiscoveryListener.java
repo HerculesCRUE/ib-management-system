@@ -16,87 +16,72 @@ import org.springframework.stereotype.Component;
 
 import es.um.asio.abstractions.constants.Constants;
 import es.um.asio.abstractions.domain.ManagementBusEvent;
-import es.um.asio.domain.PojoData;
+import es.um.asio.domain.PojoLinkedToData;
 import es.um.asio.service.model.GeneralBusEvent;
 import es.um.asio.service.notification.service.NotificationService;
 import es.um.asio.service.rdf.RDFService;
 
-/**
- * General message listener for Pojo
- */
 @Profile("!unit-test")
 @Component
-public class PojoGeneralListener {
+public class DiscoveryListener {
 
 	/**
 	 * Logger
 	 */
-	private final Logger logger = LoggerFactory.getLogger(PojoGeneralListener.class);
-
-	/** The queue. */
+	private final Logger logger = LoggerFactory.getLogger(DiscoveryListener.class);
+	
 	@Autowired
 	private Queue queue;
-
-	/** The jms template. */
+	
 	@Autowired
 	private JmsTemplate jmsTemplate;
 
 	@Autowired
 	private RDFService rdfService;
-
-	@Autowired
-	private NotificationService notificationService;
-
+	
 	@Autowired
 	private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
-
+	
+	@Autowired
+	private NotificationService notificationService;
+	
 	private Integer totalItems = 0;
-
-	/**
-	 * Instantiates a new pojo general listener.
-	 */
-	public PojoGeneralListener() {
+	
+	public DiscoveryListener() {
 		super();
 		this.totalItems = 0;
 	}
-
-	/**
-	 * Method listening input topic name
-	 *
-	 * @param message
-	 */
-	@KafkaListener(id = "pojoKafkaListenerContainerFactory", topics = "#{'${app.kafka.general-topic-name}'.split(',')}", autoStartup = "false", containerFactory = "pojoKafkaListenerContainerFactory", properties = {
-			"spring.json.value.default.type:es.um.asio.domain.PojoData" })
-	public void listen(final PojoData message) {
-		// don't remove this line public void listen(ConsumerRecord<?, ?> cr)
-
+	
+	@KafkaListener(id = "discoveryKafkaListenerContainerFactory", topics = "#{'${app.kafka.discovery-action-topic-name}'.split(',')}", autoStartup = "true", 
+			containerFactory = "discoveryKafkaListenerContainerFactory", properties = { "spring.json.value.default.type:es.um.asio.domain.PojoLinkedToData" })
+	public void listen(final PojoLinkedToData message) {
+		
 		this.logger.error("Received message: {}", message);
 
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Received message: {}", message);
 		}
-
-		final ManagementBusEvent managementBusEvent = this.rdfService.createRDF(new GeneralBusEvent<PojoData>(message));
+		
+		final ManagementBusEvent managementBusEvent = this.rdfService.createRDF(new GeneralBusEvent<PojoLinkedToData>(message));
 
 		// we send the element to activeMQ
 		this.jmsTemplate.convertAndSend(this.queue, managementBusEvent);
-
+		
 		this.totalItems++;
 	}
-
-	@EventListener(condition = "event.listenerId.startsWith('pojoKafkaListenerContainerFactory-')")
+	
+	@EventListener(condition = "event.listenerId.startsWith('discoveryKafkaListenerContainerFactory-')")
 	public void eventHandler(final ListenerContainerIdleEvent event) {
-		this.logger.warn("POJO-GENERAL No messages received for {} milliseconds", event.getIdleTime());
+		this.logger.warn("POJO-DISCOVERY No messages received for {} milliseconds", event.getIdleTime());
 		this.logger.warn("Total processed items: {}", this.totalItems);
 
-		final MessageListenerContainer listenerPlainContainer = this.kafkaListenerEndpointRegistry
-				.getListenerContainer(Constants.POJO_FACTORY);
+		final MessageListenerContainer listenerPlainContainer = this.kafkaListenerEndpointRegistry.getListenerContainer(Constants.DISCOVERY_FACTORY);
 		final boolean isPlainRunning = listenerPlainContainer.isRunning();
 
 		if (isPlainRunning && (this.totalItems > 0)) {
 			this.notificationService.stopPojoGeneralListener();
-			this.notificationService.stopDiscoveryLinkListener();
-			this.notificationService.startPojoGeneralLinkListener();
+			this.notificationService.stopPojoGeneralLinkListener();
+			this.notificationService.startDiscoveryLinkListener();
 			this.totalItems = 0;
 		}
 	}

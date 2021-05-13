@@ -10,5 +10,9 @@ public interface NotificationService {
 	
 	void stopPojoGeneralLinkListener();
 	
+	void startDiscoveryLinkListener();
+	
+	void stopDiscoveryLinkListener();
+	
     Boolean isRunningQueues();
 }

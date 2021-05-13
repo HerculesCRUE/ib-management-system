@@ -4,7 +4,8 @@
 
 | Entregable     | Procesador de datos                                          |
 | -------------- | ------------------------------------------------------------ |
-| Fecha          | 12/12/2020                                                   |
+| Fecha          | 28/04/2021                                                   |
+| Revisador por  | Paloma Terán Pérez                                           |
 | Proyecto       | [ASIO](https://www.um.es/web/hercules/proyectos/asio) (Arquitectura Semántica e Infraestructura Ontológica) en el marco de la iniciativa [Hércules](https://www.um.es/web/hercules/) para la Semántica de Datos de Investigación de Universidades que forma parte de [CRUE-TIC](https://www.crue.org/proyecto/hercules/) |
 | Módulo         | Sistema de gestión                                           |
 | Tipo           | Software                                                     |
@@ -93,7 +94,7 @@ No es necesario especificar la clase de inicio de la aplicación, ya que el fich
 
 Se incluyen los resultados del testing y cobertura en los siguientes enlaces:
 
-* [Testing TDD](http://herc-iz-front-desa.atica.um.es:8070/management-system/surefire/surefire-report.html)
+* [Testing TDD](https://reports.herculesasioizertis.desa.um.es/management-system/surefire/surefire-report.html)
 * [Cobertura TDD](https://sonarcloud.io/component_measures?id=HerculesCRUE_ib-management-system&metric=coverage&view=list)
 * [Testing BDD](docs/testing.md)
 

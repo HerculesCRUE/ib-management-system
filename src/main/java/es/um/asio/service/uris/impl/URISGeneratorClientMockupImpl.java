@@ -1,5 +1,7 @@
 package es.um.asio.service.uris.impl;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -34,5 +36,34 @@ public class URISGeneratorClientMockupImpl implements URISGeneratorClient {
 	@Override
 	public String createPropertyURI(Object input, String property) {
 		return "http://www.w3.org/2001/asio-rdf/3.0#";
+	}
+
+	@Override
+	public Map<String, String> mapResourceID(Object input) {
+		return null;
+	}
+
+	@Override
+	public String createResourceID(Object input, String lang) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, String> mapResourceID(Object input, String lang) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String createPropertyURI(Object input, String property, String lang) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String createResourceTypeURI(String className, String lang) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

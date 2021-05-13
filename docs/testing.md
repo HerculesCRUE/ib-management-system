@@ -8,7 +8,7 @@ Ver documento [README](https://github.com/HerculesCRUE/ib-asio-docs-/blob/master
 
 ## Escenarios
 
-A continuación se describen los escenarios probados, utilizando el framework [Cucumber](https://cucumber.io/docs/cucumber/)
+A continuación, se describen los escenarios probados, utilizando el framework [Cucumber](https://cucumber.io/docs/cucumber/)
 
 | Requisitos                                                | Feature                                                     | Descripción                                                                                                                                          |
 | ----------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -21,7 +21,7 @@ RF3.1<br>RF3.13<br>RF3.14<br>RF3.15	| [`pojo-xml.feature`](../src/test/features/
 
 ## Reporte
 
-* [Cucumber Report](http://herc-iz-front-desa.atica.um.es:8070/management-system/cucumber/overview-features.html)
+* [Cucumber Report](https://reports.herculesasioizertis.desa.um.es/management-system/cucumber/overview-features.html)
 
 
 

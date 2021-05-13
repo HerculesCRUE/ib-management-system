@@ -6,6 +6,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import es.um.asio.abstractions.constants.Constants;
@@ -14,6 +15,7 @@ import es.um.asio.abstractions.domain.Operation;
 import es.um.asio.domain.PojoLinkData;
 import es.um.asio.service.model.GeneralBusEvent;
 import es.um.asio.service.model.ModelWrapper;
+import es.um.asio.service.rdf.RDFDiscoveryService;
 import es.um.asio.service.rdf.RDFPojoLinkBuilderService;
 
 /**
@@ -30,10 +32,13 @@ public class RDFPojoLinkBuilderServiceImpl implements RDFPojoLinkBuilderService 
 
 	/** The Constant ETL_POJO_ID. */
 	private static final String ETL_POJO_ID = "id";
+	
+	@Autowired
+	private RDFDiscoveryService rDFDiscoveryService;
 
 	@Override
 	public ManagementBusEvent nextBuilder(final GeneralBusEvent<?> input) {
-		return null;
+		return rDFDiscoveryService.inkoveBuilder(input);
 	}
 
 	@Override

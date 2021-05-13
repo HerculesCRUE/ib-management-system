@@ -38,3 +38,4 @@ services:
 volumes:
   zookeeper_data:
   kafka_data:
+  
