@@ -2,6 +2,7 @@
 
 ## 2.0-SNAPSHOT (19/05/2021)
 
+- Git build actions
 - Cambios para aceptar el multiidioma
 - Integración con la librería de descubrimiento
 
