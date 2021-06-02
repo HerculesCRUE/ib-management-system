@@ -121,8 +121,8 @@ public class NotificationServiceImpl implements NotificationService {
 		this.logger.info("POJO_LINK_FACTORY DATA: " + pojolinkContainer.toString());
 		this.logger.info("STATE POJO_LINK_FACTORY ISRUNNING: " + pojolink);
 
-		this.logger.info("STATE FINAL ISRUNNING: " + (pojolink || pojo));
-		return (pojo || pojolink);
+		this.logger.info("STATE FINAL ISRUNNING: " + (!pojolink && !pojo));
+		return (!pojo && !pojolink);
 	}
 
 	/**
