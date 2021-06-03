@@ -79,4 +79,4 @@ server:
 ### log
 logging:
   level:
-    es.um.asio.service: DEBUG
+    es.um.asio.service: INFO
