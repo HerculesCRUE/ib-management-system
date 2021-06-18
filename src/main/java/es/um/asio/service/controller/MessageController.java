@@ -1,6 +1,6 @@
 package es.um.asio.service.controller;
 
-import javax.jms.Queue;
+import javax.jms.Topic;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,19 +18,19 @@ import es.um.asio.abstractions.domain.ManagementBusEvent;
 public class MessageController {
 
 	@Autowired
-    private Queue queue;
+	private Topic queue;
 
-    @Autowired
-    private JmsTemplate jmsTemplate;
+	@Autowired
+	private JmsTemplate jmsTemplate;
 
-    @GetMapping("message/{message}")
-    public ResponseEntity<String> publish(@PathVariable("message") final String message){
-    	
-    	final ManagementBusEvent obj = new ManagementBusEvent();
-    	obj.setModel("myModel");
-    	obj.setClassName("myTestClass");
-    	
-        jmsTemplate.convertAndSend(queue, obj);
-        return new ResponseEntity<>(message, HttpStatus.OK);
-    }
+	@GetMapping("message/{message}")
+	public ResponseEntity<String> publish(@PathVariable("message") final String message) {
+
+		final ManagementBusEvent obj = new ManagementBusEvent();
+		obj.setModel("myModel");
+		obj.setClassName("myTestClass");
+
+		jmsTemplate.convertAndSend(queue, obj);
+		return new ResponseEntity<>(message, HttpStatus.OK);
+	}
 }

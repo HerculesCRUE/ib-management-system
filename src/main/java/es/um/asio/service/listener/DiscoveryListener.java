@@ -1,6 +1,6 @@
 package es.um.asio.service.listener;
 
-import javax.jms.Queue;
+import javax.jms.Topic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,53 +29,55 @@ public class DiscoveryListener {
 	 * Logger
 	 */
 	private final Logger logger = LoggerFactory.getLogger(DiscoveryListener.class);
-	
+
 	@Autowired
-	private Queue queue;
-	
+	private Topic topic;
+
 	@Autowired
 	private JmsTemplate jmsTemplate;
 
 	@Autowired
 	private RDFService rdfService;
-	
+
 	@Autowired
 	private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
-	
+
 	@Autowired
 	private NotificationService notificationService;
-	
+
 	private Integer totalItems = 0;
-	
+
 	public DiscoveryListener() {
 		super();
 		this.totalItems = 0;
 	}
-	
-	@KafkaListener(id = "discoveryKafkaListenerContainerFactory", topics = "#{'${app.kafka.discovery-action-topic-name}'.split(',')}", autoStartup = "true", 
-			containerFactory = "discoveryKafkaListenerContainerFactory", properties = { "spring.json.value.default.type:es.um.asio.domain.PojoLinkedToData" })
+
+	@KafkaListener(id = "discoveryKafkaListenerContainerFactory", topics = "#{'${app.kafka.discovery-action-topic-name}'.split(',')}", autoStartup = "true", containerFactory = "discoveryKafkaListenerContainerFactory", properties = {
+			"spring.json.value.default.type:es.um.asio.domain.PojoLinkedToData" })
 	public void listen(final PojoLinkedToData message) {
-		
+
 		this.logger.error("Received message: {}", message);
 
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Received message: {}", message);
 		}
-		
-		final ManagementBusEvent managementBusEvent = this.rdfService.createRDF(new GeneralBusEvent<PojoLinkedToData>(message));
+
+		final ManagementBusEvent managementBusEvent = this.rdfService
+				.createRDF(new GeneralBusEvent<PojoLinkedToData>(message));
 
 		// we send the element to activeMQ
-		this.jmsTemplate.convertAndSend(this.queue, managementBusEvent);
-		
+		this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
+
 		this.totalItems++;
 	}
-	
+
 	@EventListener(condition = "event.listenerId.startsWith('discoveryKafkaListenerContainerFactory-')")
 	public void eventHandler(final ListenerContainerIdleEvent event) {
 		this.logger.warn("POJO-DISCOVERY No messages received for {} milliseconds", event.getIdleTime());
 		this.logger.warn("Total processed items: {}", this.totalItems);
 
-		final MessageListenerContainer listenerPlainContainer = this.kafkaListenerEndpointRegistry.getListenerContainer(Constants.DISCOVERY_FACTORY);
+		final MessageListenerContainer listenerPlainContainer = this.kafkaListenerEndpointRegistry
+				.getListenerContainer(Constants.DISCOVERY_FACTORY);
 		final boolean isPlainRunning = listenerPlainContainer.isRunning();
 
 		if (isPlainRunning && (this.totalItems > 0)) {
