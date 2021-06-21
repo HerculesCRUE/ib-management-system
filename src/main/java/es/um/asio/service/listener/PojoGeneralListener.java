@@ -1,5 +1,6 @@
 package es.um.asio.service.listener;
 
+import javax.jms.JMSException;
 import javax.jms.Topic;
 
 import org.slf4j.Logger;
@@ -77,14 +78,14 @@ public class PojoGeneralListener {
 		}
 
 		final ManagementBusEvent managementBusEvent = this.rdfService.createRDF(new GeneralBusEvent<PojoData>(message));
-		logger.error("RDF creado " + managementBusEvent.toString());
+		logger.info("RDF creado " + managementBusEvent.toString());
 		// we send the element to activeMQ
 		try {
 			this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
 		} catch (Exception e) {
-			logger.error("convertAndSend erro:" + e.getMessage());
+			logger.error("convertAndSend error:" + e.getMessage());
 		}
-		logger.error("RDF enviado ");
+
 		this.totalItems++;
 	}
 
