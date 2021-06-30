@@ -18,6 +18,7 @@ app:
     general-topic-name: general-data
     general-link-topic-name: general-link-data
     management-topic-name: management-data
+    import-error-topic-name: import-error
     create-topics: false
   generator-uris:
     mockup:
