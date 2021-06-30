@@ -37,6 +37,9 @@ public class RDFDatasetBuilderServiceImpl  implements RDFDatasetBuilderService {
 
 	@Autowired
 	private URISGeneratorClient urisGeneratorClient;
+	
+	@Autowired
+	private RDFServiceUtils rdfServiceUtils;
 
 	
 	/**
@@ -118,6 +121,9 @@ public class RDFDatasetBuilderServiceImpl  implements RDFDatasetBuilderService {
 		} catch (Exception e) {
 			logger.error("Error creating resource from input: " + obj);
 			logger.error("createRDF",e);
+			
+			// we sent import error to kafka error topic
+			this.rdfServiceUtils.sendImportError(e, obj);
 		}
 		
 		return result;

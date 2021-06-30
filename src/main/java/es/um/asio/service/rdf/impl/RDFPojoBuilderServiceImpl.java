@@ -55,6 +55,9 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 	@Autowired
 	private RDFPojoLinkBuilderService rDFPojoLinkingBuilderService;
 	
+	@Autowired
+	private RDFServiceUtils rdfServiceUtils;
+			
 	private Boolean changeOperation;
 
 	/**
@@ -184,6 +187,9 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 			this.logger.error("Error creating resource from input: " + obj);
 			this.logger.error("Error cause " + e.getMessage());
 			logger.error("createRDF",e);
+			
+			// we sent import error to kafka error topic
+			this.rdfServiceUtils.sendImportError(e, obj);
 		}
 		
 		createRDFWatchDog.takeTime("createRDF");

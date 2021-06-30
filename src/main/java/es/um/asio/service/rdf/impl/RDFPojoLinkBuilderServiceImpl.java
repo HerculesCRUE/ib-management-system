@@ -35,6 +35,9 @@ public class RDFPojoLinkBuilderServiceImpl implements RDFPojoLinkBuilderService 
 	
 	@Autowired
 	private RDFDiscoveryService rDFDiscoveryService;
+	
+	@Autowired
+	private RDFServiceUtils rdfServiceUtils;
 
 	@Override
 	public ManagementBusEvent nextBuilder(final GeneralBusEvent<?> input) {
@@ -76,6 +79,9 @@ public class RDFPojoLinkBuilderServiceImpl implements RDFPojoLinkBuilderService 
 			this.logger.error("Error creating resource from linking input: " + obj);
 			this.logger.error("Error cause " + e.getMessage());
 			logger.error("createRDF",e);
+			
+			// we sent import error to kafka error topic
+			this.rdfServiceUtils.sendImportError(e, obj);
 		}
 
 		return result;
