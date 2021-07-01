@@ -1,10 +1,13 @@
 package es.um.asio.service.rdf.impl;
 
+import java.util.LinkedHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import es.um.asio.abstractions.constants.Constants;
 import es.um.asio.domain.importer.ImportError;
 import es.um.asio.service.repository.KafkaErrorRepository;
 
@@ -27,14 +30,15 @@ public class RDFServiceUtils {
 		importError.setDescription(e.getMessage());
 		
 		try {
-			//TODO retrieve executionId from input object. The ETL should add executionId field.
-			
-			// importError.setJobExecutionId((String) PropertyUtils.getProperty(input, "executionId"));
+			final LinkedHashMap<String,Object> inputPojo = ((LinkedHashMap<String,Object>) input);
+			if (inputPojo.containsKey(Constants.EXECUTION_ID)) {
+				importError.setJobExecutionId(inputPojo.get(Constants.EXECUTION_ID).toString());
+				kafkaErrorRepository.send(importError);
+			} else {
+				logger.error(String.format("sendImportError - Non existing executionId. %s", input));
+			}
 		} catch (Exception e1) {
-			this.logger.error("Missing executionId field in {}", input);
-		} 
-		
-		// we send importError object to 'import-error' topic
-		this.kafkaErrorRepository.send(importError);
+			logger.error(String.format("sendImportError - Error unknown generating import error. %s", input), e1);
+		}			
 	}
 }
