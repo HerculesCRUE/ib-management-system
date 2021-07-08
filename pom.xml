@@ -254,6 +254,22 @@
 			<version>${rxjava.version}</version>
 		</dependency>
 		
+		<dependency>
+		    <groupId>fr.inria.lille.shexjava</groupId>
+		    <artifactId>shexjava-core</artifactId>
+		    <version>1.2.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+		</dependency>
+	
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+			
 		<!-- activeMQ -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -300,6 +316,39 @@
 			<groupId>net.masterthought</groupId>
 			<artifactId>cucumber-reporting</artifactId>
 			<version>5.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>3.4.2</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>hsqldb</artifactId>
+					<groupId>org.hsqldb</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+		</dependency>
+	
+	
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+		</dependency>
+	
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-hibernate5</artifactId>
 		</dependency>
 
 	</dependencies>

@@ -80,10 +80,12 @@ public class PojoGeneralLinkListener {
 		final ManagementBusEvent managementBusEvent = this.rdfService
 				.createRDF(new GeneralBusEvent<PojoLinkData>(message));
 
-		// we send the element to activeMQ
-		this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
+		if (managementBusEvent != null) {
+			// we send the element to activeMQ
+			this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
 
-		this.totalItems++;
+			this.totalItems++;
+		}
 	}
 
 	@EventListener(condition = "event.listenerId.startsWith('pojoLinkKafkaListenerContainerFactory-')")

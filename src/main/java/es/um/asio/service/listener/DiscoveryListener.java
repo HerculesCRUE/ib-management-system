@@ -65,10 +65,12 @@ public class DiscoveryListener {
 		final ManagementBusEvent managementBusEvent = this.rdfService
 				.createRDF(new GeneralBusEvent<PojoLinkedToData>(message));
 
-		// we send the element to activeMQ
-		this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
+		if (managementBusEvent != null) {
+			// we send the element to activeMQ
+			this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
 
-		this.totalItems++;
+			this.totalItems++;
+		}
 	}
 
 	@EventListener(condition = "event.listenerId.startsWith('discoveryKafkaListenerContainerFactory-')")

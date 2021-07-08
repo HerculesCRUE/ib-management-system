@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import es.um.asio.abstractions.constants.Constants;
 import es.um.asio.abstractions.domain.ManagementBusEvent;
 import es.um.asio.domain.InputData;
 import es.um.asio.domain.cvn.CvnBean;
@@ -29,6 +30,7 @@ import es.um.asio.service.model.GeneralBusEvent;
 import es.um.asio.service.model.ModelWrapper;
 import es.um.asio.service.rdf.RDFCvnBuilderService;
 import es.um.asio.service.rdf.RDFDatasetBuilderService;
+import es.um.asio.service.rdfvalidator.RdfValidatorService;
 import es.um.asio.service.uris.URISGeneratorClient;
 import es.um.asio.service.util.RDFUtil;
 
@@ -55,6 +57,9 @@ public class RDFCvnBuilderServiceImpl implements RDFCvnBuilderService {
 	@Autowired
 	private RDFServiceUtils rdfServiceUtils;
 
+	@Autowired
+	private RdfValidatorService rdfValidatorService;
+	
 	/**
 	 * The property uri cache.
 	 */
@@ -69,6 +74,7 @@ public class RDFCvnBuilderServiceImpl implements RDFCvnBuilderService {
 	public ManagementBusEvent inkoveBuilder(GeneralBusEvent<?> input) {
 		if (canBeProcessed(input)) {
 			ModelWrapper model = this.createRDF(input.retrieveInnerObj());
+			rdfValidatorService.validate(model);
 			return new ManagementBusEvent(model.getModelId(), RDFUtil.toString(model.getModel()), StringUtils.EMPTY,
 					input.retrieveInnerObj().getClass().getSimpleName(), input.retrieveOperation());
 		}
@@ -113,25 +119,29 @@ public class RDFCvnBuilderServiceImpl implements RDFCvnBuilderService {
 
 		try {
 
+			result.setExecutionId((String)getFieldValue(obj, Constants.EXECUTION_ID));
+			
 			// 1. create the resource
 			String modelId = urisGeneratorClient.createResourceID(obj);
 			Resource resourceProperties = createResource(model, obj, modelId);
 
 			// 2. we set the type
+			String modelType = urisGeneratorClient.createResourceTypeURI(obj.getClass().getName());
 			Resource resourceClass = model
-					.createResource(urisGeneratorClient.createResourceTypeURI(obj.getClass().getName()));
+					.createResource(modelType);
 			model.add(resourceProperties, RDF.type, resourceClass);
+			result.setModelType(modelType);
 
 			// 4. we build the result model
 			result.setModelId(modelId);
-			result.setModel(model);
+			result.setModel(model);			
 
 		} catch (Exception e) {
 			logger.error("Error creating resource from input: " + obj);
 			logger.error("createRDF", e);
 
 			// we sent import error to kafka error topic
-			this.rdfServiceUtils.sendImportError(e, obj);
+			this.rdfServiceUtils.sendImportError(e, result.getExecutionId());
 		}
 
 		return result;
@@ -157,7 +167,7 @@ public class RDFCvnBuilderServiceImpl implements RDFCvnBuilderService {
 		for (Field field : fields) {
 			// field.setAccessible(true); // watch out with this line
 			Object value = field.get(obj);
-			if (value == null) {
+			if (value == null || Constants.EXECUTION_ID.equalsIgnoreCase(field.getName())) {
 				continue;
 			}
 
@@ -188,6 +198,20 @@ public class RDFCvnBuilderServiceImpl implements RDFCvnBuilderService {
 		}
 
 		return resource;
+	}
+	
+	private Object getFieldValue(Object obj, String fieldName) {
+		try {
+			List<Field> fields = this.getFields(obj.getClass());
+			for (Field field : fields) {
+				if (fieldName.equalsIgnoreCase(field.getName())) {
+					return field.get(obj);
+				}
+			}
+		} catch (Exception e) {
+
+		}
+		return null;
 	}
 
 	/**

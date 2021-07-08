@@ -49,7 +49,9 @@ public class DataSetDataGeneralListener {
         }
 
         ManagementBusEvent managementBusEvent = rdfService.createRDF(new GeneralBusEvent<InputData<DataSetData>>(message));
-                      
-        this.kafkaService.send(managementBusEvent);
+                
+        if (managementBusEvent != null) {
+        	this.kafkaService.send(managementBusEvent);
+        }
     }
 }
