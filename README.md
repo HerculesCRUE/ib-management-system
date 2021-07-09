@@ -78,6 +78,10 @@ Será preciso configurar las siguientes variables de entorno cuando se instale e
 |`SPRING_ACTIVEMQ_PASSWORD`|Password cola JMS|admin|
 |`SPRING_ACTIVEMQ_BROKER_URL`|URL base de la cola JMS|tcp://127.0.0.1:61616|
 |`SPRING_ACTIVEMQ_BROKER_JMX_CREATECONNECTOR`|Flag que indica si es necesario crear un conector|false|
+|`SHAPE`|Flag que indica si es necesario crear un conector|false|
+|`APP_SHAPE-VALIDATOR_ENABLED`|Flag que indica si se aplicará la validación de los RDF a partir de expresiones SHEX|true|
+|`APP_SHAPE-VALIDATOR_ENDPOINT`|URL del servicio de validacion de los RDF a partir de expresiones SHEX|http://localhost:8090/api|
+| `APP_PERSISTENCE_DATASOURCE_URL` | Url base de datos | jdbc:mysql://localhost:3307/umasio?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&createDatabaseIfNotExist=true |
 
 ### Ejecución
 
