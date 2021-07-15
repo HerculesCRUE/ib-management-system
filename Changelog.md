@@ -1,5 +1,11 @@
 # Registro de cambios
 
+## 2.1-SNAPSHOT (15/07/2021)
+
+- Correccion en la validación de objetos a traves del api validador shapeEx
+- Añadida más información en los errores de importación
+
+
 ## 2.0-SNAPSHOT (19/05/2021)
 
 - Git build actions
