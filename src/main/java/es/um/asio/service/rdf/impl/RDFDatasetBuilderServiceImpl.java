@@ -14,12 +14,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import es.um.asio.abstractions.constants.Constants;
 import es.um.asio.abstractions.domain.ManagementBusEvent;
 import es.um.asio.domain.InputData;
 import es.um.asio.service.model.GeneralBusEvent;
 import es.um.asio.service.model.ModelWrapper;
 import es.um.asio.service.rdf.RDFDatasetBuilderService;
 import es.um.asio.service.rdf.RDFPojoBuilderService;
+import es.um.asio.service.rdfvalidator.RdfValidatorService;
 import es.um.asio.service.uris.URISGeneratorClient;
 import es.um.asio.service.util.RDFUtil;
 
@@ -37,7 +39,12 @@ public class RDFDatasetBuilderServiceImpl  implements RDFDatasetBuilderService {
 
 	@Autowired
 	private URISGeneratorClient urisGeneratorClient;
-
+	
+	@Autowired
+	private RDFServiceUtils rdfServiceUtils;
+	
+	@Autowired
+	private RdfValidatorService rdfValidatorService;
 	
 	/**
 	 * Creates the.
@@ -49,6 +56,7 @@ public class RDFDatasetBuilderServiceImpl  implements RDFDatasetBuilderService {
 		ManagementBusEvent result = null;
 		if (input.getData() instanceof InputData) {
 			ModelWrapper model = this.createRDF(input.retrieveInnerObj());
+			rdfValidatorService.validate(model);
 			result = new ManagementBusEvent(model.getModelId(), RDFUtil.toString(model.getModel()), StringUtils.EMPTY, input.retrieveInnerObj().getClass().getSimpleName(), input.retrieveOperation());
 		} else {
 			result = nextBuilder(input);
@@ -93,19 +101,27 @@ public class RDFDatasetBuilderServiceImpl  implements RDFDatasetBuilderService {
 			
 			String propertyValue;
 			for (Field field : fields) {
-				Property property = model.createProperty(urisGeneratorClient.createPropertyURI(obj, field.getName()), field.getName());
-				propertyValue = StringUtils.isEmpty(BeanUtils.getSimpleProperty(obj, field.getName())) ? StringUtils.EMPTY : BeanUtils.getSimpleProperty(obj, field.getName());
+										
+				propertyValue = StringUtils.isEmpty(BeanUtils.getSimpleProperty(obj, field.getName())) ? StringUtils.EMPTY : BeanUtils.getSimpleProperty(obj, field.getName());							
 				
-				if(StringUtils.EMPTY.equals(propertyValue)) {
-					logger.warn("Null property: " + field.getName() + " in object : " + obj.toString());
+				if (Constants.EXECUTION_ID.equalsIgnoreCase(field.getName())) {
+					result.setExecutionId(propertyValue);					
+				} else {	
+					Property property = model.createProperty(urisGeneratorClient.createPropertyURI(obj, field.getName()), field.getName());
+					
+					if(StringUtils.EMPTY.equals(propertyValue)) {
+						logger.warn("Null property: " + field.getName() + " in object : " + obj.toString());
+					}
+					
+					resourceProperties.addProperty(property, propertyValue);
 				}
-				
-				resourceProperties.addProperty(property, propertyValue);
 			}
 
 			// 3. we set the type
-			Resource resourceClass = model.createResource(urisGeneratorClient.createResourceTypeURI(obj.getClass().getName()));
+			String modelType = urisGeneratorClient.createResourceTypeURI(obj.getClass().getName());
+			Resource resourceClass = model.createResource(modelType);
 			model.add(resourceProperties, RDF.type, resourceClass);
+			result.setModelType(modelType);
 
 			// 4. we build the result model
 			result.setModelId(modelId);
@@ -118,6 +134,9 @@ public class RDFDatasetBuilderServiceImpl  implements RDFDatasetBuilderService {
 		} catch (Exception e) {
 			logger.error("Error creating resource from input: " + obj);
 			logger.error("createRDF",e);
+			
+			// we sent import error to kafka error topic
+			this.rdfServiceUtils.sendImportError(e, result.getExecutionId());
 		}
 		
 		return result;

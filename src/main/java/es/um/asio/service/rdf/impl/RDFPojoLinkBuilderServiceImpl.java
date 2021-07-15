@@ -17,6 +17,7 @@ import es.um.asio.service.model.GeneralBusEvent;
 import es.um.asio.service.model.ModelWrapper;
 import es.um.asio.service.rdf.RDFDiscoveryService;
 import es.um.asio.service.rdf.RDFPojoLinkBuilderService;
+import es.um.asio.service.rdfvalidator.RdfValidatorService;
 
 /**
  * The Class RDFPojoLinkBuilderServiceImpl.
@@ -35,6 +36,12 @@ public class RDFPojoLinkBuilderServiceImpl implements RDFPojoLinkBuilderService 
 	
 	@Autowired
 	private RDFDiscoveryService rDFDiscoveryService;
+	
+	@Autowired
+	private RDFServiceUtils rdfServiceUtils;	
+	
+	@Autowired
+	private RdfValidatorService rdfValidatorService;
 
 	@Override
 	public ManagementBusEvent nextBuilder(final GeneralBusEvent<?> input) {
@@ -47,6 +54,8 @@ public class RDFPojoLinkBuilderServiceImpl implements RDFPojoLinkBuilderService 
 		if (input.getData() instanceof PojoLinkData) {
 			final ModelWrapper model = this.createRDF(input.retrieveInnerObj());
 
+			rdfValidatorService.validate(model);
+			
 			result = new ManagementBusEvent(
 					model.getModelId(), 
 					StringUtils.EMPTY,
@@ -66,8 +75,9 @@ public class RDFPojoLinkBuilderServiceImpl implements RDFPojoLinkBuilderService 
 		try {
 			// model ID
 			LinkedHashMap<String, Object> linkedObj = (LinkedHashMap<String, Object>) PropertyUtils.getProperty(obj, Constants.LINKED_MODEL);			
-			objectId = this.safetyCheck(linkedObj.get(RDFPojoLinkBuilderServiceImpl.ETL_POJO_ID));
+			objectId = this.safetyCheck(linkedObj.get(RDFPojoLinkBuilderServiceImpl.ETL_POJO_ID));			
 			result.setModelId(objectId);
+			result.setExecutionId(this.safetyCheck(linkedObj.get(Constants.EXECUTION_ID)));
 			
 			// nested object
 			result.setLinkedModel(linkedObj);
@@ -76,6 +86,9 @@ public class RDFPojoLinkBuilderServiceImpl implements RDFPojoLinkBuilderService 
 			this.logger.error("Error creating resource from linking input: " + obj);
 			this.logger.error("Error cause " + e.getMessage());
 			logger.error("createRDF",e);
+			
+			// we sent import error to kafka error topic
+			this.rdfServiceUtils.sendImportError(e, result.getExecutionId());
 		}
 
 		return result;

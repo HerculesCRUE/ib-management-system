@@ -6,4 +6,4 @@ app:
 ## Actuator
 management:
   server:
-    port: 9321
+    port: 9324

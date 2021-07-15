@@ -1,6 +1,7 @@
 package es.um.asio.service.listener;
 
-import javax.jms.Queue;
+import javax.jms.JMSException;
+import javax.jms.Topic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +34,9 @@ public class PojoGeneralListener {
 	 */
 	private final Logger logger = LoggerFactory.getLogger(PojoGeneralListener.class);
 
-	/** The queue. */
+	/** The topic. */
 	@Autowired
-	private Queue queue;
+	private Topic topic;
 
 	/** The jms template. */
 	@Autowired
@@ -77,11 +78,18 @@ public class PojoGeneralListener {
 		}
 
 		final ManagementBusEvent managementBusEvent = this.rdfService.createRDF(new GeneralBusEvent<PojoData>(message));
-
-		// we send the element to activeMQ
-		this.jmsTemplate.convertAndSend(this.queue, managementBusEvent);
-
-		this.totalItems++;
+		
+		if (managementBusEvent != null) {
+			logger.info("RDF creado " + managementBusEvent.toString());
+			// we send the element to activeMQ
+			try {
+				this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
+			} catch (Exception e) {
+				logger.error("convertAndSend error:" + e.getMessage());
+			}
+	
+			this.totalItems++;
+		}
 	}
 
 	@EventListener(condition = "event.listenerId.startsWith('pojoKafkaListenerContainerFactory-')")

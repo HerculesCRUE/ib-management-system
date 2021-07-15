@@ -1,5 +1,18 @@
 ---
 app:
+  persistence:
+    datasource:
+      driver-class-name: com.mysql.jdbc.Driver
+      username: root
+      password: root
+      url: jdbc:mysql://localhost:3307/umasio?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&createDatabaseIfNotExist=true
+    
+    jpa:
+      dialect: org.hibernate.dialect.MariaDB53Dialect
+      generate-ddl: false
+      show-sql: false
+      properties:
+        hibernate.temp.use_jdbc_metadata_defaults: false
   domain: hercules.org
  # CORS
   cors:
@@ -11,13 +24,16 @@ app:
       - X-Requested-With
       - Content-Type
     maxAge: 3600
-
+  shape-validator:
+    enabled: true
+    endpoint: http://localhost:8090/api
   kafka:
     discovery-action-topic-name: discovery_action
     general-contingency-topic-name: general-contingency-data
     general-topic-name: general-data
     general-link-topic-name: general-link-data
     management-topic-name: management-data
+    import-error-topic-name: import-error
     create-topics: false
   generator-uris:
     mockup:
@@ -79,4 +95,4 @@ server:
 ### log
 logging:
   level:
-    es.um.asio.service: WARN
+    es.um.asio.service: INFO

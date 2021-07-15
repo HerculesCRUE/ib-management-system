@@ -23,4 +23,9 @@ public class ModelWrapper {
 	
 	/** The nested objects. */
 	private Object linkedModel;
+	
+	
+	private String executionId;
+	
+	private String modelType;
 }

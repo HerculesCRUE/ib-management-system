@@ -26,6 +26,7 @@ import es.um.asio.service.model.GeneralBusEvent;
 import es.um.asio.service.model.ModelWrapper;
 import es.um.asio.service.rdf.RDFPojoBuilderService;
 import es.um.asio.service.rdf.RDFPojoLinkBuilderService;
+import es.um.asio.service.rdfvalidator.RdfValidatorService;
 import es.um.asio.service.uris.URISGeneratorClient;
 import es.um.asio.service.util.RDFUtil;
 
@@ -55,7 +56,13 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 	@Autowired
 	private RDFPojoLinkBuilderService rDFPojoLinkingBuilderService;
 	
+	@Autowired
+	private RDFServiceUtils rdfServiceUtils;
+			
 	private Boolean changeOperation;
+	
+	@Autowired
+	private RdfValidatorService rdfValidatorService;
 
 	/**
 	 * Creates the.
@@ -70,6 +77,8 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 		
 		if (input.getData() instanceof PojoData) {
 			final ModelWrapper model = this.createRDF(input.retrieveInnerObj());
+			
+			rdfValidatorService.validate(model);
 			
 			if (Operation.INSERT.equals(((PojoData) input.getData()).getOperation()) && this.changeOperation) {
 				((PojoData) input.getData()).setOperation(Operation.UPDATE);
@@ -144,30 +153,35 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 			String value = null;
 			for(Map.Entry<String, Object> entry: inputPojo.entrySet()) {
 				key = entry.getKey();
+				value = entry.getValue() == null ? StringUtils.EMPTY : StringUtils.defaultString(entry.getValue().toString());
 				
-				// we skip the clase field
-				if (!RDFPojoBuilderServiceImpl.ETL_POJO_CLASS.equalsIgnoreCase(key) &&
-						!Constants.LANG.equalsIgnoreCase(key)) {
+				if (Constants.EXECUTION_ID.equalsIgnoreCase(key)) {
+					result.setExecutionId(value);
+				} else if (!RDFPojoBuilderServiceImpl.ETL_POJO_CLASS.equalsIgnoreCase(key)
+						&& !Constants.LANG.equalsIgnoreCase(key)) {
 					urisWatchDog.reset();
-					final Property property = model.createProperty(urisGeneratorClient.createPropertyURI(obj, key, lang), key);
+					final Property property = model
+							.createProperty(urisGeneratorClient.createPropertyURI(obj, key, lang), key);
 					urisWatchDog.takeTime("createPropertyURI");
-					
-					// simple property						
-					value = entry.getValue() == null ? StringUtils.EMPTY : StringUtils.defaultString(entry.getValue().toString());
-					resourceProperties.addProperty(property, value, StringUtils.isNotBlank(lang) ? lang.split("-")[0] : RDFPojoBuilderServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
-				}
+
+					// simple property
+					resourceProperties.addProperty(property, value, StringUtils.isNotBlank(lang) ? lang.split("-")[0]
+							: RDFPojoBuilderServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
+				}				
 			}
 			
 			// 3. we set the type
 			urisWatchDog.reset();
-			final Resource resourceClass = model.createResource(urisGeneratorClient.createResourceTypeURI(className, lang));
+			String modelType = urisGeneratorClient.createResourceTypeURI(className, lang);
+			final Resource resourceClass = model.createResource(modelType);
 			urisWatchDog.takeTime("createResourceTypeURI");
 			
 			model.add(resourceProperties, RDF.type, resourceClass);
+			result.setModelType(modelType);
 
 			// 4. we build the result model
 			result.setModelId(modelId);
-			result.setModel(model);			
+			result.setModel(model);						
 			
 			// 5. print out
 			if(this.logger.isDebugEnabled()) {
@@ -184,6 +198,9 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 			this.logger.error("Error creating resource from input: " + obj);
 			this.logger.error("Error cause " + e.getMessage());
 			logger.error("createRDF",e);
+			
+			// we sent import error to kafka error topic
+			this.rdfServiceUtils.sendImportError(e, result.getExecutionId());
 		}
 		
 		createRDFWatchDog.takeTime("createRDF");

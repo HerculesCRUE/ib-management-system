@@ -56,6 +56,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public void startPojoGeneralListener() {
 		final MessageListenerContainer listenerContainer = this.kafkaListenerEndpointRegistry
 				.getListenerContainer(Constants.POJO_FACTORY);
+		this.logger.warn("START pojoKafkaListenerContainerFactory");
 		if (listenerContainer != null) {
 			listenerContainer.start();
 			listenerContainer.setAutoStartup(true);
@@ -69,6 +70,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public void stopPojoGeneralListener() {
 		final MessageListenerContainer listenerContainer = this.kafkaListenerEndpointRegistry
 				.getListenerContainer(Constants.POJO_FACTORY);
+		this.logger.warn("STOP pojoKafkaListenerContainerFactory");
 		if (listenerContainer != null) {
 			listenerContainer.stop();
 			listenerContainer.setAutoStartup(false);
@@ -82,6 +84,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public void startPojoGeneralLinkListener() {
 		final MessageListenerContainer listenerContainer = this.kafkaListenerEndpointRegistry
 				.getListenerContainer(Constants.POJO_LINK_FACTORY);
+		this.logger.warn("START pojoLinkKafkaListenerContainerFactory");
 		if (listenerContainer != null) {
 			listenerContainer.start();
 		}
@@ -94,6 +97,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public void stopPojoGeneralLinkListener() {
 		final MessageListenerContainer listenerContainer = this.kafkaListenerEndpointRegistry
 				.getListenerContainer(Constants.POJO_LINK_FACTORY);
+		this.logger.warn("STOP pojoLinkKafkaListenerContainerFactory");
 		if (listenerContainer != null) {
 			listenerContainer.stop();
 		}
@@ -109,21 +113,26 @@ public class NotificationServiceImpl implements NotificationService {
 		final MessageListenerContainer pojoContainer = this.kafkaListenerEndpointRegistry
 				.getListenerContainer(Constants.POJO_FACTORY);
 		final boolean pojo = pojoContainer.isRunning();
-
+		this.logger.info("POJO_FACTORY DATA: " + pojoContainer.toString());
+		this.logger.info("STATE POJO_FACTORY ISRUNNING: " + pojo);
 		final MessageListenerContainer pojolinkContainer = this.kafkaListenerEndpointRegistry
 				.getListenerContainer(Constants.POJO_LINK_FACTORY);
 		final boolean pojolink = pojolinkContainer.isRunning();
+		this.logger.info("POJO_LINK_FACTORY DATA: " + pojolinkContainer.toString());
+		this.logger.info("STATE POJO_LINK_FACTORY ISRUNNING: " + pojolink);
 
-		return (pojo || pojolink);
+		this.logger.info("STATE FINAL ISRUNNING: " + (!pojolink && !pojo));
+		return (!pojo && !pojolink);
 	}
-	
+
 	/**
 	 * Start discovery listener.
 	 */
 	@Override
 	public void startDiscoveryLinkListener() {
-		final MessageListenerContainer listenerContainer = this.kafkaListenerEndpointRegistry.getListenerContainer(Constants.DISCOVERY_FACTORY);
-		
+		final MessageListenerContainer listenerContainer = this.kafkaListenerEndpointRegistry
+				.getListenerContainer(Constants.DISCOVERY_FACTORY);
+
 		if (listenerContainer != null) {
 			listenerContainer.start();
 		}
@@ -134,8 +143,9 @@ public class NotificationServiceImpl implements NotificationService {
 	 */
 	@Override
 	public void stopDiscoveryLinkListener() {
-		final MessageListenerContainer listenerContainer = this.kafkaListenerEndpointRegistry.getListenerContainer(Constants.DISCOVERY_FACTORY);
-		
+		final MessageListenerContainer listenerContainer = this.kafkaListenerEndpointRegistry
+				.getListenerContainer(Constants.DISCOVERY_FACTORY);
+
 		if (listenerContainer != null) {
 			listenerContainer.stop();
 		}

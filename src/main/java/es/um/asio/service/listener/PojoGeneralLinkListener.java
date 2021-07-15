@@ -1,6 +1,6 @@
 package es.um.asio.service.listener;
 
-import javax.jms.Queue;
+import javax.jms.Topic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public class PojoGeneralLinkListener {
 
 	/** The queue. */
 	@Autowired
-	private Queue queue;
+	private Topic topic;
 
 	/** The jms template. */
 	@Autowired
@@ -63,7 +63,7 @@ public class PojoGeneralLinkListener {
 	/**
 	 * Method listening input topic name
 	 * 
-	 *  public void listen(ConsumerRecord<?, ?> cr) {
+	 * public void listen(ConsumerRecord<?, ?> cr) {
 	 * 
 	 * @param message
 	 */
@@ -80,10 +80,12 @@ public class PojoGeneralLinkListener {
 		final ManagementBusEvent managementBusEvent = this.rdfService
 				.createRDF(new GeneralBusEvent<PojoLinkData>(message));
 
-		// we send the element to activeMQ
-		this.jmsTemplate.convertAndSend(this.queue, managementBusEvent);
+		if (managementBusEvent != null) {
+			// we send the element to activeMQ
+			this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
 
-		this.totalItems++;
+			this.totalItems++;
+		}
 	}
 
 	@EventListener(condition = "event.listenerId.startsWith('pojoLinkKafkaListenerContainerFactory-')")
