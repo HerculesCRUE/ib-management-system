@@ -2,10 +2,10 @@
 app:
   persistence:
     datasource:
-      driver-class-name: com.mysql.jdbc.Driver
-      username: root
-      password: root
-      url: jdbc:mysql://localhost:3307/umasio?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&createDatabaseIfNotExist=true
+      driver-class-name: org.mariadb.jdbc.Driver
+      username: app
+      password: sqlpass
+      url: jdbc:mariadb://localhost:3307/umasio?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&createDatabaseIfNotExist=true
     
     jpa:
       dialect: org.hibernate.dialect.MariaDB53Dialect
@@ -13,7 +13,7 @@ app:
       show-sql: false
       properties:
         hibernate.temp.use_jdbc_metadata_defaults: false
-  domain: hercules.org
+  domain: ldpld1.um.es
  # CORS
   cors:
     enabled: true
@@ -60,10 +60,10 @@ app:
 # Spring configuration
 spring:
   kafka:
-    bootstrap-servers: localhost:29092
+    bootstrap-servers: localhost:9092
     consumer:
       bootstrap-servers:
-        - localhost:29092
+        - localhost:9092
       group-id: management-system
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

@@ -47,6 +47,8 @@ public class DiscoveryListener {
 			this.logger.debug("Received message: {}", message);
 		}
 
+		GeneralBusEvent<PojoLinkedToData> a = new GeneralBusEvent<PojoLinkedToData>(message);
+
 		final ManagementBusEvent managementBusEvent = this.rdfService
 				.createRDF(new GeneralBusEvent<PojoLinkedToData>(message));
 

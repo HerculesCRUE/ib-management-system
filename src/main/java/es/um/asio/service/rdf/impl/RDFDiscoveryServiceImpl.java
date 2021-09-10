@@ -1,6 +1,7 @@
 package es.um.asio.service.rdf.impl;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -113,9 +114,16 @@ public class RDFDiscoveryServiceImpl implements RDFDiscoveryService {
 					final Property property = model.createProperty(urisGeneratorClient.createPropertyURI(obj, key), key);
 					urisWatchDog.takeTime("createPropertyURI");
 					
-					// simple property						
-					value = entry.getValue() == null ? StringUtils.EMPTY : StringUtils.defaultString(entry.getValue().toString());
-					resourceProperties.addProperty(property, value, RDFDiscoveryServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
+					// list property
+					if (entry.getValue() instanceof List) {
+						for ( Object valueList :((List)entry.getValue())) {
+							value = valueList == null ? StringUtils.EMPTY : StringUtils.defaultString(valueList.toString());
+							resourceProperties.addProperty(property, value, RDFDiscoveryServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
+						}
+					} else { // simple property
+						value = entry.getValue() == null ? StringUtils.EMPTY : StringUtils.defaultString(entry.getValue().toString());
+						resourceProperties.addProperty(property, value, RDFDiscoveryServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
+					}
 				}
 			}
 			
