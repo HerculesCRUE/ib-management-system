@@ -60,7 +60,7 @@
 		<commons-beanutils.version>1.9.4</commons-beanutils.version>
 		<dataset-domain-model.version>1.0-SNAPSHOT</dataset-domain-model.version>
 		<domain-model.version>1.0-SNAPSHOT</domain-model.version>
-		<jena.version>3.14.0</jena.version>
+		<jena.version>4.2.0</jena.version>
 		<asio-abstractions.version>1.0-SNAPSHOT</asio-abstractions.version>
 		<rdf4j-rio-api.version>2.1.4</rdf4j-rio-api.version>
 		<rxjava.version>3.0.4</rxjava.version>
