@@ -91,7 +91,7 @@ public class RDFDiscoveryServiceImpl implements RDFDiscoveryService {
 			linkedObj.put("@class", className);
 			
 			urisWatchDog.reset();
-			final String modelId = urisGeneratorClient.createResourceID(obj);
+			final String modelId = urisGeneratorClient.createResourceID(obj,false);
 			urisWatchDog.takeTime("createResourceID");
 			
 			// 1. create the resource

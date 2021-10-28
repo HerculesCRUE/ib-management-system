@@ -34,6 +34,11 @@ public class URISGeneratorClientMockupImpl implements URISGeneratorClient {
 	}
 
 	@Override
+	public String createResourceID(Object input, boolean useDiscovery) {
+		return generatorIDService.generateResourceID(input);
+	}
+
+	@Override
 	public String createPropertyURI(Object input, String property) {
 		return "http://www.w3.org/2001/asio-rdf/3.0#";
 	}

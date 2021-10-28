@@ -15,6 +15,14 @@ public interface URISGeneratorClient {
 	 * @return the string
 	 */
 	String createResourceID(Object input);
+
+	/**
+	 * Creates the resource ID.
+	 *
+	 * @param input the input
+	 * @return the string
+	 */
+	String createResourceID(Object input,boolean useDiscovery);
 	
 	/**
 	 * Creates the resource ID.

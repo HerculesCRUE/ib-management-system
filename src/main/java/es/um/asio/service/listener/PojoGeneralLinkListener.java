@@ -1,5 +1,7 @@
 package es.um.asio.service.listener;
 
+import java.util.LinkedHashMap;
+
 import javax.jms.Topic;
 
 import org.slf4j.Logger;
@@ -16,9 +18,12 @@ import org.springframework.stereotype.Component;
 
 import es.um.asio.abstractions.constants.Constants;
 import es.um.asio.abstractions.domain.ManagementBusEvent;
+import es.um.asio.abstractions.domain.Operation;
 import es.um.asio.domain.PojoLinkData;
 import es.um.asio.service.model.GeneralBusEvent;
+import es.um.asio.service.model.ModelWrapper;
 import es.um.asio.service.notification.service.NotificationService;
+import es.um.asio.service.rdf.RDFPojoLinkBuilderService;
 import es.um.asio.service.rdf.RDFService;
 
 /**
@@ -43,6 +48,9 @@ public class PojoGeneralLinkListener {
 
 	@Autowired
 	private RDFService rdfService;
+
+	@Autowired
+	private RDFPojoLinkBuilderService rDFPojoLinkingBuilderService;
 
 	@Autowired
 	private NotificationService notificationService;
@@ -98,6 +106,31 @@ public class PojoGeneralLinkListener {
 		final boolean isLinkRunning = listenerLinkContainer.isRunning();
 
 		if (isLinkRunning && (this.totalItems > 0)) {
+
+			try {
+
+				LinkedHashMap<String, Object> message = new LinkedHashMap<>();
+				PojoLinkData data = new PojoLinkData(Operation.FINAL, null);
+
+				LinkedHashMap<String, Object> gi = new LinkedHashMap<String, Object>();
+				gi.put("id", "1");
+				gi.put("@class", "grupoInvestigacion");
+				message.put("grupoInvestigacion", gi);
+				ModelWrapper model = rDFPojoLinkingBuilderService.createRDF(message);
+				data.setData(model);
+
+				final ManagementBusEvent managementBusEvent = this.rdfService
+						.createRDF(new GeneralBusEvent<PojoLinkData>(data));
+				if (managementBusEvent != null) {
+					// we send the element to activeMQ
+					this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
+
+					this.totalItems++;
+				}
+			} catch (Exception e) {
+				this.logger.error("ERROR FINAL COLA KAFKA: " + e.getMessage());
+			}
+
 			this.notificationService.stopPojoGeneralListener();
 			this.notificationService.stopPojoGeneralLinkListener();
 			// this.notificationService.stopDiscoveryLinkListener();
