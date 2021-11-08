@@ -128,7 +128,7 @@ public class PojoGeneralLinkListener {
 					this.totalItems++;
 				}
 			} catch (Exception e) {
-				this.logger.error("ERROR FINAL COLA KAFKA: " + e.getMessage());
+				this.logger.error("ERROR FINAL COLA KAFKA, error: " + e.getMessage());
 			}
 
 			this.notificationService.stopPojoGeneralListener();
