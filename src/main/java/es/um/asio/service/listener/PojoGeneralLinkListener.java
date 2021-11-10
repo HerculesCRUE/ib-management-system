@@ -106,7 +106,7 @@ public class PojoGeneralLinkListener {
 		final boolean isLinkRunning = listenerLinkContainer.isRunning();
 
 		if (isLinkRunning && (this.totalItems > 0)) {
-
+			this.logger.warn("POJO-LINK-GENERAL Send Last Pojo and stop listener");
 			try {
 
 				LinkedHashMap<String, Object> message = new LinkedHashMap<>();
