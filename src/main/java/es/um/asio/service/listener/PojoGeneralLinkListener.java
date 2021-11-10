@@ -1,7 +1,5 @@
 package es.um.asio.service.listener;
 
-import java.util.LinkedHashMap;
-
 import javax.jms.Topic;
 
 import org.slf4j.Logger;
@@ -21,7 +19,6 @@ import es.um.asio.abstractions.domain.ManagementBusEvent;
 import es.um.asio.abstractions.domain.Operation;
 import es.um.asio.domain.PojoLinkData;
 import es.um.asio.service.model.GeneralBusEvent;
-import es.um.asio.service.model.ModelWrapper;
 import es.um.asio.service.notification.service.NotificationService;
 import es.um.asio.service.rdf.RDFPojoLinkBuilderService;
 import es.um.asio.service.rdf.RDFService;
@@ -108,25 +105,9 @@ public class PojoGeneralLinkListener {
 		if (isLinkRunning && (this.totalItems > 0)) {
 			this.logger.warn("POJO-LINK-GENERAL Send Last Pojo and stop listener");
 			try {
-
-				LinkedHashMap<String, Object> message = new LinkedHashMap<>();
-				PojoLinkData data = new PojoLinkData(Operation.FINAL, null);
-
-				LinkedHashMap<String, Object> gi = new LinkedHashMap<String, Object>();
-				gi.put("id", "1");
-				gi.put("@class", "grupoInvestigacion");
-				message.put("grupoInvestigacion", gi);
-				ModelWrapper model = rDFPojoLinkingBuilderService.createRDF(message);
-				data.setData(model);
-
-				final ManagementBusEvent managementBusEvent = this.rdfService
-						.createRDF(new GeneralBusEvent<PojoLinkData>(data));
-				if (managementBusEvent != null) {
-					// we send the element to activeMQ
-					this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
-
-					this.totalItems++;
-				}
+				final ManagementBusEvent managementBusEvent = new ManagementBusEvent("FINAL_IMPORT", null, null, null,
+						Operation.FINAL);
+				this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
 			} catch (Exception e) {
 				this.logger.error("ERROR FINAL COLA KAFKA, error: " + e.getMessage());
 			}
