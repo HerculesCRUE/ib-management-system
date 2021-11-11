@@ -113,7 +113,7 @@ public class RDFDiscoveryServiceImpl implements RDFDiscoveryService {
 					urisWatchDog.takeTime("createPropertyURI");
 					
 					// list property
-					if (entry.getValue() instanceof List) {
+					if (entry.getValue() instanceof List) { // List
 						for ( Object valueList :((List)entry.getValue())) {
 							value = valueList == null ? StringUtils.EMPTY : StringUtils.defaultString(valueList.toString());
 							if (!Utils.isValidURL(value)) {
