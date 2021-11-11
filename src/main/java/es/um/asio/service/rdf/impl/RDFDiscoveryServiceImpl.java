@@ -4,12 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import es.um.asio.service.util.Utils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,11 +116,21 @@ public class RDFDiscoveryServiceImpl implements RDFDiscoveryService {
 					if (entry.getValue() instanceof List) {
 						for ( Object valueList :((List)entry.getValue())) {
 							value = valueList == null ? StringUtils.EMPTY : StringUtils.defaultString(valueList.toString());
-							resourceProperties.addProperty(property, value, RDFDiscoveryServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
+							if (!Utils.isValidURL(value)) {
+								resourceProperties.addProperty(property, value, RDFDiscoveryServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
+							} else {
+								Resource res = model.createResource(value);
+								resourceProperties.addProperty(property, res);
+							}
 						}
 					} else { // simple property
 						value = entry.getValue() == null ? StringUtils.EMPTY : StringUtils.defaultString(entry.getValue().toString());
-						resourceProperties.addProperty(property, value, RDFDiscoveryServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
+						if (!Utils.isValidURL(value)) {
+							resourceProperties.addProperty(property, value, RDFDiscoveryServiceImpl.SPANISH_LANGUAGE_BY_DEFAULT);
+						} else {
+							Resource res = model.createResource(value);
+							resourceProperties.addProperty(property, res);
+						}
 					}
 				}
 			}
