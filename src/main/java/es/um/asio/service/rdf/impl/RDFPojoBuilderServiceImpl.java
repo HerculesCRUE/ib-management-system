@@ -160,6 +160,7 @@ public class RDFPojoBuilderServiceImpl implements RDFPojoBuilderService {
 				} else if (!RDFPojoBuilderServiceImpl.ETL_POJO_CLASS.equalsIgnoreCase(key)
 						&& !Constants.LANG.equalsIgnoreCase(key)) {
 					urisWatchDog.reset();
+
 					final Property property = model
 							.createProperty(urisGeneratorClient.createPropertyURI(obj, key, lang), key);
 					urisWatchDog.takeTime("createPropertyURI");

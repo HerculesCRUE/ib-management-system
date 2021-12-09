@@ -16,9 +16,11 @@ import org.springframework.stereotype.Component;
 
 import es.um.asio.abstractions.constants.Constants;
 import es.um.asio.abstractions.domain.ManagementBusEvent;
+import es.um.asio.abstractions.domain.Operation;
 import es.um.asio.domain.PojoLinkData;
 import es.um.asio.service.model.GeneralBusEvent;
 import es.um.asio.service.notification.service.NotificationService;
+import es.um.asio.service.rdf.RDFPojoLinkBuilderService;
 import es.um.asio.service.rdf.RDFService;
 
 /**
@@ -43,6 +45,9 @@ public class PojoGeneralLinkListener {
 
 	@Autowired
 	private RDFService rdfService;
+
+	@Autowired
+	private RDFPojoLinkBuilderService rDFPojoLinkingBuilderService;
 
 	@Autowired
 	private NotificationService notificationService;
@@ -98,9 +103,18 @@ public class PojoGeneralLinkListener {
 		final boolean isLinkRunning = listenerLinkContainer.isRunning();
 
 		if (isLinkRunning && (this.totalItems > 0)) {
+			this.logger.warn("POJO-LINK-GENERAL Send Last Pojo and stop listener");
+			try {
+				final ManagementBusEvent managementBusEvent = new ManagementBusEvent("FINAL_IMPORT", null, null, null,
+						Operation.FINAL);
+				this.jmsTemplate.convertAndSend(this.topic, managementBusEvent);
+			} catch (Exception e) {
+				this.logger.error("ERROR FINAL COLA KAFKA, error: " + e.getMessage());
+			}
+
 			this.notificationService.stopPojoGeneralListener();
 			this.notificationService.stopPojoGeneralLinkListener();
-			this.notificationService.stopDiscoveryLinkListener();
+			// this.notificationService.stopDiscoveryLinkListener();
 			this.totalItems = 0;
 		}
 	}

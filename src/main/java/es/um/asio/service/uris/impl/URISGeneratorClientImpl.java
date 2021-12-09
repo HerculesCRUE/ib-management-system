@@ -73,7 +73,22 @@ public class URISGeneratorClientImpl implements URISGeneratorClient {
 		
 		return result;
 	}
-	
+
+	@Override
+	public String createResourceID(Object obj, boolean useDiscovery) {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(resourceIdEndpoint)
+				.queryParam(Constants.DOMAIN, StringUtils.isNotBlank(this.domain) ? this.domain : Constants.DOMAIN_VALUE)
+				.queryParam(Constants.LANG, Constants.SPANISH_LANGUAGE)
+				.queryParam(Constants.SUBDOMAIN, Constants.SUBDOMAIN_VALUE)
+				.queryParam("requestDiscovery",useDiscovery);
+
+		Map response = restTemplate.postForObject(builder.toUriString(), obj, Map.class);
+
+		String result = response != null ? (String)response.get(Constants.CANONICAL_LANGUAGE_URI): null;
+
+		return result;
+	}
+
 	/**
 	 * Creates the resource ID.
 	 *
