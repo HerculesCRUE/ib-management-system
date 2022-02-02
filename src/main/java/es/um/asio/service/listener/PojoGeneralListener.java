@@ -70,11 +70,7 @@ public class PojoGeneralListener {
 	public void listen(final PojoData message) {
 		// don't remove this line public void listen(ConsumerRecord<?, ?> cr)
 
-		this.logger.error("Received message: {}", message);
-
-		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Received message: {}", message);
-		}
+		this.logger.info("Received message: {}", message);
 
 		final ManagementBusEvent managementBusEvent = this.rdfService.createRDF(new GeneralBusEvent<PojoData>(message));
 

@@ -76,11 +76,7 @@ public class PojoGeneralLinkListener {
 			"spring.json.value.default.type:es.um.asio.domain.PojoLinkData" })
 	public void listen(final PojoLinkData message) {
 
-		this.logger.warn("Pojo General Link item {}", message.getData());
-
-		if (this.logger.isDebugEnabled()) {
-			this.logger.error("Received message: {}", message);
-		}
+		this.logger.info("Pojo General Link item {}", message.getData());
 
 		final ManagementBusEvent managementBusEvent = this.rdfService
 				.createRDF(new GeneralBusEvent<PojoLinkData>(message));

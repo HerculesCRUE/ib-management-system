@@ -41,11 +41,7 @@ public class DiscoveryListener {
 			"spring.json.value.default.type:es.um.asio.domain.PojoLinkedToData" })
 	public void listen(final PojoLinkedToData message) {
 
-		this.logger.error("Received message: {}", message);
-
-		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Received message: {}", message);
-		}
+		this.logger.info("Received message: {}", message);
 
 		GeneralBusEvent<PojoLinkedToData> a = new GeneralBusEvent<PojoLinkedToData>(message);
 

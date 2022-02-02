@@ -60,11 +60,13 @@ app:
 # Spring configuration
 spring:
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:29092
     consumer:
       bootstrap-servers:
-        - localhost:9092
+        - localhost:29092
       group-id: management-system
+      properties:
+        max.poll.interval.ms: 20000000
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   activemq:
@@ -86,7 +88,7 @@ management:
     web:
       base-path: /management
   server:
-    port: 9321
+    port: 9324
 
 ## In case of configure web endpoints, remove it or change port number
 server:

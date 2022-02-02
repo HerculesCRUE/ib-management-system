@@ -20,38 +20,37 @@ import es.um.asio.service.rdf.RDFService;
 @Profile("!unit-test")
 @Component
 public class DataSetDataGeneralListener {
-    /**
-     * Logger
-     */
-    private final Logger logger = LoggerFactory.getLogger(DataSetDataGeneralListener.class);
+	/**
+	 * Logger
+	 */
+	private final Logger logger = LoggerFactory.getLogger(DataSetDataGeneralListener.class);
 
-    /**
-     * Service to handle message entity related operations
-     */
-    @Autowired
-    private KafkaService kafkaService;
-    
-    @Autowired
-    private RDFService rdfService;
+	/**
+	 * Service to handle message entity related operations
+	 */
+	@Autowired
+	private KafkaService kafkaService;
 
-    /**
-     * Method listening input topic name
-     * 
-     * @param message
-     */
-    @KafkaListener(id="dataSetDataKafkaListenerContainerFactory",topics = "#{'${app.kafka.general-contingency-topic-name}'.split(',')}", containerFactory = "dataSetDataKafkaListenerContainerFactory")
-    public void listen(final InputData<DataSetData> message) {
-    	
-    	// INSERT operation by default
-    	
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Received message: {}", message);
-        }
+	@Autowired
+	private RDFService rdfService;
 
-        ManagementBusEvent managementBusEvent = rdfService.createRDF(new GeneralBusEvent<InputData<DataSetData>>(message));
-                
-        if (managementBusEvent != null) {
-        	this.kafkaService.send(managementBusEvent);
-        }
-    }
+	/**
+	 * Method listening input topic name
+	 * 
+	 * @param message
+	 */
+	@KafkaListener(id = "dataSetDataKafkaListenerContainerFactory", topics = "#{'${app.kafka.general-contingency-topic-name}'.split(',')}", containerFactory = "dataSetDataKafkaListenerContainerFactory")
+	public void listen(final InputData<DataSetData> message) {
+
+		// INSERT operation by default
+
+		this.logger.info("Received message: {}", message);
+
+		ManagementBusEvent managementBusEvent = rdfService
+				.createRDF(new GeneralBusEvent<InputData<DataSetData>>(message));
+
+		if (managementBusEvent != null) {
+			this.kafkaService.send(managementBusEvent);
+		}
+	}
 }
